@@ -35,7 +35,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 if (isset($_GET['delete_id'])) {
     $delete_id = $_GET['delete_id'];
 
-    $delete_sql = "DELETE FROM users WHERE id='$delete_id'";
+    $delete_sql = "UPDATE users SET status = 1 WHERE id='$delete_id'";
     if (mysqli_query($conn, $delete_sql)) {
         header("Location: restricted_page.php");
         exit();
@@ -62,8 +62,11 @@ if (isset($_GET['delete_id'])) {
         <th>Name</th>
         <th>Email</th>
         <th>Edit</th>
+        <th>Is Deleted</th>
         <th>Delete</th>
-      </tr>
+        <th>Date Created</th>
+        <th>Date Updated</th>
+  </tr>
       <?php foreach ($users as $user) { ?>
         <tr>
           <td><?php echo $user['name']; ?></td>
@@ -75,10 +78,12 @@ if (isset($_GET['delete_id'])) {
               <input type="email" name="new_email" required value="<?php echo $user['email']; ?>">
               <input type="submit" value="Save">
             </form>
-          </td>
+          </td><td><?php  echo $user['status'];   ?></td>
           <td>
             <a href="restricted_page.php?delete_id=<?php echo $user['id']; ?>" class="delete-btn" onclick="return confirm('Are you sure you want to delete this user?')">Delete</a>
           </td>
+          <td><?php  echo $user['create_date'];   ?></td>
+          <td><?php  echo $user['updated_date'];   ?></td>
         </tr>
       <?php } ?>
     </table>

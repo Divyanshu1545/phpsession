@@ -5,19 +5,28 @@ include ('connect.php');
 
 $name = $email = $password = '';
 
-// Check if the form is submitted
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $name = $_POST['name'];
     $email = $_POST['email'];
-    $password = password_hash($_POST['password'], PASSWORD_BCRYPT); 
 
+    $password = password_hash($_POST['password'], PASSWORD_BCRYPT); 
+$sql="Select * from users where email='$email'";
+$result=mysqli_query($conn,$sql);
+if (mysqli_num_rows($result)>=1) {
+  echo '<script>alert("Email already exists");</script>';
+ 
+}else{
     
     $sql = "INSERT INTO users (name, email, password) VALUES ('$name', '$email', '$password')";
+
     if (mysqli_query($conn, $sql)) {
         
-        echo "Registration successful!";
-    } else {
-        echo "Error: " . mysqli_error($conn);
+      echo '<script>alert("Registration Successful");</script>';
+      } else {
+      $error=mysqli_error($conn);
+      echo '<script>alert("An error occured");</script>';
+        }
     }
 }
 ?>
@@ -28,7 +37,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Registration Page</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="styleRegister.css">
 </head>
 <body>
   <div class="register-container">
@@ -47,6 +56,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <input type="password" id="password" name="password" required>
       </div>
       <div class="form-group">
+      <a href="login.php">Already Registered? Click here to login</a>
         <input type="submit" value="Register">
       </div>
     </form>

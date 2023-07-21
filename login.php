@@ -66,6 +66,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <input type="password" id="password" name="password" autocomplete="new-password" required>
       </div>
       <div class="form-group">
+        <a href="register.php">Not registered? Register here.</a>
         <input type="submit" value="Login">
       </div>
     </form>
