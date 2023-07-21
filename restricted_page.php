@@ -1,24 +1,22 @@
 <?php
-// restricted_page.php
 
-// Include the check_login.php file to verify if the user is logged in
 require_once('check_login.php');
 
-// Include the database connection file
+
 require_once('connect.php');
 
-// Fetch all users from the database
+
 $sql = "SELECT * FROM users";
 $result = mysqli_query($conn, $sql);
 
-// Check if any users exist
+
 if (mysqli_num_rows($result) > 0) {
     $users = mysqli_fetch_all($result, MYSQLI_ASSOC);
 } else {
     $users = array();
 }
 
-// Handle updating user details
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (isset($_POST['update_id']) && !empty($_POST['update_id'])) {
         $update_id = $_POST['update_id'];
@@ -33,7 +31,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 
-// Handle deleting users
+
 if (isset($_GET['delete_id'])) {
     $delete_id = $_GET['delete_id'];
 
@@ -74,7 +72,7 @@ if (isset($_GET['delete_id'])) {
             <form method="post">
               <input type="hidden" name="update_id" value="<?php echo $user['id']; ?>">
               <input type="text" name="new_name" required value="<?php echo $user['name']; ?>">
-              <input type="text" name="new_email" required value="<?php echo $user['email']; ?>">
+              <input type="email" name="new_email" required value="<?php echo $user['email']; ?>">
               <input type="submit" value="Save">
             </form>
           </td>

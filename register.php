@@ -1,10 +1,8 @@
 <?php
-// register.php
 
-// Include the database connection file
 include ('connect.php');
 
-// Define variables to hold user input
+
 $name = $email = $password = '';
 
 // Check if the form is submitted
@@ -13,10 +11,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = $_POST['email'];
     $password = password_hash($_POST['password'], PASSWORD_BCRYPT); 
 
-    // Perform database insert
+    
     $sql = "INSERT INTO users (name, email, password) VALUES ('$name', '$email', '$password')";
     if (mysqli_query($conn, $sql)) {
-        // Registration successful, you can redirect to a success page here
+        
         echo "Registration successful!";
     } else {
         echo "Error: " . mysqli_error($conn);
