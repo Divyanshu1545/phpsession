@@ -29,6 +29,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             
             $_SESSION['user_id'] = $row['id'];
             $_SESSION['username'] = $row['name'];
+            $_SESSION['terms_and_conditions']=$row['terms_and_conditions'];
             header("Location: restricted_page.php");
             exit();
         } else {

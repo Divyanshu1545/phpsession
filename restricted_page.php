@@ -43,8 +43,34 @@ $total_pages = ceil($total_records / $records_per_page);
   <link rel="stylesheet" href="style2.css">
 </head>
 <body>
-  <h1>Welcome, <?php echo $_SESSION['username']; ?>!</h1>
-  <p>This is a restricted page that only logged-in users can access.</p>
+  <<h1>Restricted Page - Welcome, <?php echo $_SESSION['username']; ?></h1>
+
+<!-- Search Form -->
+<form action="search_results.php" method="get">
+    <input type="text" name="search_student_name" placeholder="Search by Student Name">
+    <input type="text" name="search_father_name" placeholder="Search by Father Name">
+    <input type="text" name="search_phone" placeholder="Search by Phone">
+    <input type="text" name="search_email" placeholder="Search by Email">
+    <select name="search_class">
+        <option value="">-- Select Class --</option>
+        <option value="1st">1st</option>
+        <option value="2nd">2nd</option>
+        <!-- Add other options for 3rd to 12th classes -->
+    </select>
+    <select name="search_gender">
+        <option value="">-- Select Gender --</option>
+        <option value="m">Male</option>
+        <option value="f">Female</option>
+    </select>
+    <label for="start_date">Start Date:</label>
+    <input type="date" name="start_date" id="start_date">
+    <label for="end_date">End Date:</label>
+    <input type="date" name="end_date" id="end_date">
+    <input type="submit" name="search" value="Search">
+</form>
+
+  <a href="logout.php">Logout</a><br><br>
+  <a href="student_registration.php">Register a new student</a>
 
   <h2>Students:</h2>
   <?php if (count($students) > 0) { ?>
@@ -66,7 +92,7 @@ $total_pages = ceil($total_records / $records_per_page);
       <?php foreach ($students as $student) { ?>
         <tr>
           <td><?php echo $student['student_id']; ?></td>
-          <td
+          
 <td>
     <form action="manage_student.php" method="post">
         <input type="hidden" name="student_id" value="<?php echo $student['student_id']; ?>">
@@ -102,7 +128,7 @@ $total_pages = ceil($total_records / $records_per_page);
     <td>
         <input type="date" name="date_of_birth" value="<?php echo $student['date_of_birth']; ?>" <?php echo ($student['status'] == 1) ? 'disabled' : ''; ?>>
     </td>
-    <td><?php echo $student['status']; ?></td>
+    <td><?php echo $is_active = ($student['status']==0) ? "Active" : "Inactive" ; ?></td>
     <td>
         <input type="submit" name="update" value="Update" <?php echo ($student['status'] == 1) ? 'disabled' : ''; ?>>
     </td>
@@ -114,7 +140,8 @@ $total_pages = ceil($total_records / $records_per_page);
       <?php } ?>
     </table>
 
-    <!-- Pagination links -->
+
+    
     <?php if ($total_pages > 1) { ?>
       <div class="pagination">
         <?php if ($current_page > 1) { ?>
@@ -138,6 +165,5 @@ $total_pages = ceil($total_records / $records_per_page);
     <p>No students found.</p>
   <?php } ?>
 
-  <a href="logout.php">Logout</a>
 </body>
 </html>

@@ -24,18 +24,17 @@ if (isset($_POST['update']) && isset($_POST['student_id'])) {
                         class = '$class',
                         gender = '$gender',
                         note = '$note',
-                        date_of_birth = '$date_of_birth',
-                        updated_date = NOW()
+                        date_of_birth = '$date_of_birth'
                     WHERE student_id = $student_id";
 
     $update_result = mysqli_query($conn, $update_query);
 
     if ($update_result) {
-        // Successful update
+        echo "<script> alert('Recor updated Successfully.');   </script>";
         header("Location: restricted_page.php");
         exit();
     } else {
-        // Failed to update
+        echo "<script> alert('There was an error while updating the record');   </script>";
         echo "Error: Unable to update the student record.";
     }
 } elseif (isset($_POST['delete']) && isset($_POST['student_id'])) {
