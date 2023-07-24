@@ -1,78 +1,185 @@
-/* style.css */
+/* Global Styles */
+body {
+  font-family: Arial, sans-serif;
+  line-height: 1.6;
+  margin: 0;
+  padding: 0;
+  background-color: #f5f5f5;
+}
 
-/* Table Styling */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+h1, h2 {
+  color: #333;
+}
+
+h2 {
+  margin-top: 40px;
+}
+
+a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* Header */
+header {
+  background-color: #007bff;
+  color: #fff;
+  padding: 20px;
+}
+
+header h1 {
+  font-size: 24px;
+  margin: 0;
+}
+
+/* Navigation */
+nav {
+  margin-top: 20px;
+}
+
+nav a {
+  display: inline-block;
+  padding: 10px 20px;
+  color: #333;
+  border: 1px solid #007bff;
+  border-radius: 5px;
+  margin-right: 10px;
+}
+
+nav a:hover {
+  background-color: #007bff;
+  color: #fff;
+}
+
+/* Table Styles */
 table {
   width: 100%;
   border-collapse: collapse;
-  margin: 20px;
+  margin-top: 20px;
 }
 
-body{
-  margin: 20px;
-  align-items: center;
-  justify-content: center;
+table th, table td {
+  padding: 10px;
+  text-align: center;
+  border-bottom: 1px solid #ccc;
 }
 
-th, td {
-  padding: 8px;
-  border: 1px solid #ddd;
-  text-align: left;
+table th {
+  background-color: #007bff;
+  color: #fff;
 }
 
-th {
-  background-color: #f2f2f2;
+table td input[type="text"], table td select, table td textarea {
+  width: 100%;
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
 }
 
-tr:hover {
-  background-color: #f2f2f2;
+table td input[type="date"] {
+  width: 100%;
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
 }
 
-/* Pagination Styling */
+table td input[type="submit"] {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+table td input[type="submit"]:hover {
+  background-color: #0056b3;
+}
+
+table td input[type="submit"]:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
 .pagination {
-  display: inline-block;
-  margin-top: 10px;
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-.pagination a {
-  color: #007BFF;
-  padding: 8px 16px;
-  text-decoration: none;
-  border: 1px solid #007BFF;
+.pagination a, .pagination span.current {
+  display: inline-block;
+  padding: 5px 10px;
+  border: 1px solid #007bff;
+  border-radius: 5px;
+  color: #007bff;
+  margin-right: 5px;
 }
+span.current{ display: inline-block;
+  padding: 5px 10px;
+  border: 1px solid #007bff;
+  border-radius: 5px;
+  color: #007bff;
+  margin-right: 5px;
+background-color: #333;}
 
 .pagination a:hover {
-  background-color: #007BFF;
-  color: white;
+  background-color: #007bff;
+  color: #fff;
 }
 
-.pagination .current {
-  background-color: #007BFF;
-  color: white;
-  padding: 8px 16px;
-  border: 1px solid #007BFF;
-}
-/* style.css */
-
-/* ... (Existing styles) ... */
-
-/* Style for the form fields in the table */
-table form input[type="text"],
-table form select,
-table form label {
-  width: 100px;
-  margin: 0 5px;
+/* Form Styles */
+form {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+  margin-bottom: 40px;
 }
 
-table form textarea {
-  width: 150px;
+form input[type="text"], form select {
+  width: 15%;
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
 }
 
-table form input[type="date"] {
-  width: 140px;
+form input[type="submit"] {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 5px;
+  cursor: pointer;
 }
 
-table form input[type="submit"] {
-  width: auto;
-  padding: 5px 10px;
-  margin: 0;
+form input[type="submit"]:hover {
+  background-color: #0056b3;
+}
+
+.gender-div {
+  display: flex;
+}
+
+/* Search Form Responsive Styles */
+@media screen and (max-width: 768px) {
+  form {
+    flex-wrap: wrap;
+  }
+  
+  form input[type="text"], form select {
+    width: 45%;
+    margin-bottom: 10px;
+  }
 }

@@ -9,34 +9,44 @@ if (isset($_POST['register']) && !isset($_POST['terms_accepted'])) {
 
 }
 
-// Include the database connection file
+
 require_once('connect.php');
 
-// Initialize variables for form validation
+
 $student_name = $father_name = $phone = $email = $class = $gender = $note = $date_of_birth = '';
 $errors = array();
 
-// Check if the form is submitted
+
 if (isset($_POST['register'])) {
-    // Retrieve form data
-    $student_name = $_POST['student_name'];
-    $father_name = $_POST['father_name'];
-    $phone = $_POST['phone'];
-    $email = $_POST['email'];
-    $class = $_POST['class'];
-    $gender = $_POST['gender'];
-    $note = $_POST['note'];
-    $date_of_birth = $_POST['date_of_birth'];
+    $student_name = filter_input(INPUT_POST, 'student_name', FILTER_SANITIZE_STRING);
+    $father_name = filter_input(INPUT_POST, 'father_name', FILTER_SANITIZE_STRING);
+    $phone = filter_input(INPUT_POST, 'phone', FILTER_SANITIZE_NUMBER_INT);
+    $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL);
+    $class = filter_input(INPUT_POST, 'class', FILTER_SANITIZE_STRING);
+    $gender = filter_input(INPUT_POST, 'gender', FILTER_SANITIZE_STRING);
+    $note = filter_input(INPUT_POST, 'note', FILTER_SANITIZE_STRING);
+    $date_of_birth = filter_input(INPUT_POST, 'date_of_birth', FILTER_SANITIZE_STRING);
 
     
+    if (!filter_var($email,FILTER_VALIDATE_EMAIL)) {
+       echo "<script> alert('Email is not valid');   </script>";
+        exit();
+    }
+
+     if (!preg_match("/^\d{10}$/", $phone)) {
+        echo "<script> alert('Phone is not valid');   </script>";
+        exit();
+    }
     
 
-    
+        
+        $check_query = $conn->prepare("SELECT phone, email FROM student WHERE phone = ? OR email = ?");
+        
+        $check_query->bind_param('ss',$phone,$email);
+        
+         $check_query->execute();
 
-        // Check if the phone and email are unique
-        $check_query = "SELECT phone, email FROM student WHERE phone = '$phone' OR email = '$email'";
-        $check_result = mysqli_query($conn, $check_query);
-
+        $check_result=$check_query->get_result();
         if ($check_result) {
             $existing_data = mysqli_fetch_assoc($check_result);
 
@@ -46,28 +56,32 @@ if (isset($_POST['register'])) {
 
             if ($existing_data['email'] === $email) {
               echo "<script> alert('Email already exists');   </script>";
+              
             }
         } else {
           echo "<script> alert('An unkwon error occured.');   </script>";
         }
 
-        // If there are no errors, insert the student record
         
-            $insert_query = "INSERT INTO student (student_name, father_name, phone, email, class, gender, note, date_of_birth,  created_by) VALUES ('$student_name', '$father_name', '$phone', '$email', '$class', '$gender', '$note', '$date_of_birth',  {$_SESSION['user_id']})";
+        
+            $insert_query =$conn->prepare( 'INSERT INTO student (student_name, father_name, phone, email, class, gender, note, date_of_birth,  created_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ? )');
 
-            $insert_result = mysqli_query($conn, $insert_query);
+            $insert_query->bind_param("sssssssss",$student_name,$father_name,$phone,$email,$class,$gender,$note,$date_of_birth,$_SESSION['user_id']);
+            $insert_query->execute();
+            
+            $insert_result=$insert_query->get_result();
 
             if ($insert_result) {
                 // Successful insertion
                 echo "<script> alert('Registered Successfully.');   </script>";
             } else {
                 // Failed to insert
-                echo "Error: Unable to register the student.";
+                echo "<script> alert('Registered Successfully.');   </script>";}
             }
         
-    }
-
+    
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -81,7 +95,7 @@ if (isset($_POST['register'])) {
     <h1>Student Registration</h1>
     <p>Register a new student by filling out the form below:</p>
 
-    <form action="student_registration.php" method="post">
+    <form action="student_registration.php" method="post" onsubmit="return validateForm()" >
         <label for="student_name">Student Name:</label>
         <input type="text" id="student_name" name="student_name" value="<?php echo htmlspecialchars($student_name); ?>" required>
         
@@ -89,16 +103,26 @@ if (isset($_POST['register'])) {
         <input type="text" id="father_name" name="father_name" value="<?php echo htmlspecialchars($father_name); ?>" required>
         
         <label for="phone">Phone:</label>
-        <input type="text" id="phone" name="phone" value="<?php echo htmlspecialchars($phone); ?>" required>
+        <input type="text" id="phone" name="phone" value="<?php echo htmlspecialchars($phone); ?>" required maxlength="10" minlength="10"  >
         
         <label for="email">Email:</label>
-        <input type="email" id="email" name="email" value="<?php echo htmlspecialchars($email); ?>" required>
+        <input  id="email" name="email" value="<?php echo htmlspecialchars($email); ?>" required >
         
         <label for="class">Class:</label>
         <select id="class" name="class" required>
             <option value="1st" <?php if ($class === '1st') echo 'selected'; ?>>1st</option>
             <option value="2nd" <?php if ($class === '2nd') echo 'selected'; ?>>2nd</option>
-            <!-- Add other options for 3rd to 12th classes -->
+            <option value="3rd" <?php if ($class === '3rd') echo 'selected'; ?>>3rd</option>
+            <option value="4th" <?php if ($class === '4th') echo 'selected'; ?>>4th</option>
+            <option value="5th" <?php if ($class === '5th') echo 'selected'; ?>>5th</option>
+            <option value="6th" <?php if ($class === '6th') echo 'selected'; ?>>6th</option>
+            <option value="7th" <?php if ($class === '7th') echo 'selected'; ?>>7th</option>
+            <option value="8th" <?php if ($class === '8th') echo 'selected'; ?>>8th</option>
+            <option value="9th" <?php if ($class === '9th') echo 'selected'; ?>>9th</option>
+            <option value="10th" <?php if ($class === '10th') echo 'selected'; ?>>10th</option>
+            <option value="1th" <?php if ($class === '2nd') echo 'selected'; ?>>11th</option>
+            <option value="12th" <?php if ($class === '12th') echo 'selected'; ?>>12th</option>
+        
         </select>
         
         <label>Gender:</label>
@@ -113,7 +137,7 @@ if (isset($_POST['register'])) {
         <textarea id="note" name="note"><?php echo htmlspecialchars($note); ?></textarea>
         
         <label for="date_of_birth">Date of Birth:</label>
-        <input type="date" id="date_of_birth" name="date_of_birth" value="<?php echo htmlspecialchars($date_of_birth); ?>" required>
+        <input type="date" id="date_of_birth" name="date_of_birth" value="<?php echo htmlspecialchars($date_of_birth); ?>" required max="<?php echo date("Y-m-d"); ?>" >
         
         <label for="terms_accepted">I accept the terms and conditions:</label>
         <input type="checkbox" id="terms_accepted" name="terms_accepted" required>
@@ -122,7 +146,55 @@ if (isset($_POST['register'])) {
     </form>
 
     <a href="restricted_page.php">Go back to Restricted Page</a>
-
     
+    <script>
+    function validateForm() {
+        // Get form elements
+        var studentName = document.getElementById("student_name").value;
+        var fatherName = document.getElementById("father_name").value;
+        var phone = document.getElementById("phone").value;
+        var email = document.getElementById("email").value;
+        var classSelection = document.getElementById("class").value;
+        var gender = document.querySelector('input[name="gender"]:checked');
+        var dateOfBirth = document.getElementById("date_of_birth").value;
+        var termsAccepted = document.getElementById("terms_accepted").checked;
+        
+        // Validate fields
+        if (studentName.trim() === "") {
+            alert("Please enter the student's name.");
+            return false;
+        }
+        if (fatherName.trim() === "") {
+            alert("Please enter the father's name.");
+            return false;
+        }
+        if (phone.length !== 10 || !(/^\d+$/.test(phone))) {
+            alert("Please enter a valid 10-digit phone number.");
+            return false;
+        }
+        if (email.trim() === "" || !/\S+@\S+\.\S+/.test(email)) {
+            alert("Please enter a valid email address.");
+            return false;
+        }
+        if (classSelection.trim() === "") {
+            alert("Please select a class.");
+            return false;
+        }
+        if (gender === null) {
+            alert("Please select a gender.");
+            return false;
+        }
+        if (dateOfBirth.trim() === "") {
+            alert("Please select a valid date of birth.");
+            return false;
+        }
+        if (!termsAccepted) {
+            alert("Please accept the terms and conditions.");
+            return false;
+        }
+        
+        return true;
+    }
+    </script>    
 </body>
 </html>

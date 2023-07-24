@@ -1,10 +1,6 @@
 <?php
-// restricted_page.php
-
-// Include the check_login.php file to verify if the user is logged in
 require_once('check_login.php');
 
-// Include the database connection file
 require_once('connect.php');
 
 // Pagination logic
@@ -41,31 +37,91 @@ $total_pages = ceil($total_records / $records_per_page);
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Restricted Page</title>
   <link rel="stylesheet" href="style2.css">
+  
 </head>
-<body>
-  <<h1>Restricted Page - Welcome, <?php echo $_SESSION['username']; ?></h1>
+<body><script>
+    function validateForm(){
+        var studentName = document.getElementById("student_name").value;
+        var fatherName = document.getElementById("father_name").value;
+        var phone = document.getElementById("phone").value;
+        var email = document.getElementById("email").value;
+        var classSelection = document.getElementById("class").value;
+        var gender = document.querySelector('input[name="gender"]:checked');
+        var dateOfBirth = document.getElementById("date_of_birth").value;
+        var termsAccepted = document.getElementById("terms_accepted").checked;
+        
+        // Validate fields
+        if (studentName.trim() === "") {
+            alert("Please enter the student's name.");
+            return false;
+        }
+        if (fatherName.trim() === "") {
+            alert("Please enter the father's name.");
+            return false;
+        }
+        if (phone.length !== 10 || !(/^\d+$/.test(phone))) {
+            alert("Please enter a valid 10-digit phone number.");
+            return false;
+        }
+        if (email.trim() === "" || !/\S+@\S+\.\S+/.test(email)) {
+            alert("Please enter a valid email address.");
+            return false;
+        }
+        if (classSelection.trim() === "") {
+            alert("Please select a class.");
+            return false;
+        }
+        if (gender === null) {
+            alert("Please select a gender.");
+            return false;
+        }
+        if (dateOfBirth.trim() === "") {
+            alert("Please select a valid date of birth.");
+            return false;
+        }
+        if (!termsAccepted) {
+            alert("Please accept the terms and conditions.");
+            return false;
+        }
+        
+        return true;
+    }
+    </script>
+  <h1>Student Page- Welcome, <?php echo $_SESSION['username']; ?></h1>
 
 <!-- Search Form -->
-<form action="search_results.php" method="get">
+<form action="search_results.php" method="get" onsubmit="return validateForm()">
     <input type="text" name="search_student_name" placeholder="Search by Student Name">
     <input type="text" name="search_father_name" placeholder="Search by Father Name">
     <input type="text" name="search_phone" placeholder="Search by Phone">
     <input type="text" name="search_email" placeholder="Search by Email">
+    <input type="date" name="date_of_birth" max="<?php echo date("Y-m-d")?>">
     <select name="search_class">
         <option value="">-- Select Class --</option>
         <option value="1st">1st</option>
         <option value="2nd">2nd</option>
-        <!-- Add other options for 3rd to 12th classes -->
+        <option value="3rd" >3rd</option>
+            <option value="4th" >4th</option>
+            <option value="5th" >5th</option>
+            <option value="6th" >6th</option>
+            <option value="7th" >7th</option>
+            <option value="8th" >8th</option>
+            <option value="9th" >9th</option>
+            <option value="10th" >10th</option>
+            <option value="1th" >11th</option>
+            <option value="12th"  >12th</option>
     </select>
     <select name="search_gender">
         <option value="">-- Select Gender --</option>
         <option value="m">Male</option>
         <option value="f">Female</option>
     </select>
-    <label for="start_date">Start Date:</label>
-    <input type="date" name="start_date" id="start_date">
-    <label for="end_date">End Date:</label>
-    <input type="date" name="end_date" id="end_date">
+    <select name="status">
+        <option value="">-- Select Status --</option>
+        <option value="0">Active</option>
+        <option value="1">inactive</option>
+    </select>
+  
     <input type="submit" name="search" value="Search">
 </form>
 
@@ -88,13 +144,15 @@ $total_pages = ceil($total_records / $records_per_page);
         <th>Status</th>
         <th>Update</th>
         <th>Delete</th>
+        <th>Created Date</th>
+        <th>Last Updated</th>
       </tr>
       <?php foreach ($students as $student) { ?>
         <tr>
           <td><?php echo $student['student_id']; ?></td>
           
 <td>
-    <form action="manage_student.php" method="post">
+    <form action="manage_student.php" method="post" onsubmit="return validateForm()">
         <input type="hidden" name="student_id" value="<?php echo $student['student_id']; ?>">
         <input type="text" name="student_name" value="<?php echo $student['student_name']; ?>" <?php echo ($student['status'] == 1) ? 'disabled' : ''; ?>>
     </td>
@@ -102,7 +160,7 @@ $total_pages = ceil($total_records / $records_per_page);
         <input type="text" name="father_name" value="<?php echo $student['father_name']; ?>" <?php echo ($student['status'] == 1) ? 'disabled' : ''; ?>>
     </td>
     <td>
-        <input type="text" name="phone" value="<?php echo $student['phone']; ?>" <?php echo ($student['status'] == 1) ? 'disabled' : ''; ?>>
+        <input type="tel" name="phone" value="<?php echo $student['phone']; ?>" <?php echo ($student['status'] == 1) ? 'disabled' : ''; ?>  maxlength="10" minlength="10" >
     </td>
     <td>
         <input type="text" name="email" value="<?php echo $student['email']; ?>" <?php echo ($student['status'] == 1) ? 'disabled' : ''; ?>>
@@ -111,24 +169,44 @@ $total_pages = ceil($total_records / $records_per_page);
         <select name="class" <?php echo ($student['status'] == 1) ? 'disabled' : ''; ?>>
             <option value="1st" <?php if ($student['class'] === '1st') echo 'selected'; ?>>1st</option>
             <option value="2nd" <?php if ($student['class'] === '2nd') echo 'selected'; ?>>2nd</option>
-            <!-- Add other options for 3rd to 12th classes -->
+
+            <option value="3rd" <?php if ($student['class'] === '3rd') echo 'selected'; ?>>3rd</option>
+            <option value="4th" <?php if ($student['class'] === '4th') echo 'selected'; ?>>4th</option>
+            <option value="5th" <?php if ($student['class'] === '5th') echo 'selected'; ?>>5th</option>
+            <option value="6th" <?php if ($student['class'] === '6th') echo 'selected'; ?>>6th</option>
+            <option value="7th" <?php if ($student['class'] === '7th') echo 'selected'; ?>>7th</option>
+            <option value="8th" <?php if ($student['class'] === '8th') echo 'selected'; ?>>8th</option>
+            <option value="9th" <?php if ($student['class'] === '9th') echo 'selected'; ?>>9th</option>
+            <option value="10th"<?php if ($student['class'] === '10th') echo 'selected'; ?>>10th</option>
+            <option value="1th" <?php if ($student['class'] === '2nd') echo 'selected'; ?>>11th</option>
+            <option value="12th"<?php if ($student['class'] === '12th') echo 'selected'; ?>>12th</option>
         </select>
     </td>
     <td>
-        <label>
+      <div class="gender-div">
+        
+        <div class="gender">
+          <label>
             <input type="radio" name="gender" value="m" <?php if ($student['gender'] === 'm') echo 'checked'; ?> <?php echo ($student['status'] == 1) ? 'disabled' : ''; ?>> Male
-        </label>
-        <label>
+          </label>
+        </div>
+        <div class="gender">
+          <label>
             <input type="radio" name="gender" value="f" <?php if ($student['gender'] === 'f') echo 'checked'; ?> <?php echo ($student['status'] == 1) ? 'disabled' : ''; ?>> Female
-        </label>
-    </td>
+          </label>
+        </div>
+
+      </div>
+      </td>
     <td>
         <textarea name="note" <?php echo ($student['status'] == 1) ? 'disabled' : ''; ?>><?php echo $student['note']; ?></textarea>
     </td>
     <td>
         <input type="date" name="date_of_birth" value="<?php echo $student['date_of_birth']; ?>" <?php echo ($student['status'] == 1) ? 'disabled' : ''; ?>>
     </td>
-    <td><?php echo $is_active = ($student['status']==0) ? "Active" : "Inactive" ; ?></td>
+    <td><select name="status" <?php echo ($student['status'] == 1) ? 'disabled' : ''; ?>> 
+        <option value="0" <?php if ($student['status'] == 0) echo 'selected'; ?>>Active</option>
+        <option value="1" <?php if ($student['status'] == 1) echo 'selected'; ?>>Inactive</option></td>
     <td>
         <input type="submit" name="update" value="Update" <?php echo ($student['status'] == 1) ? 'disabled' : ''; ?>>
     </td>
@@ -136,6 +214,8 @@ $total_pages = ceil($total_records / $records_per_page);
         <input type="submit" name="delete" value="Delete" <?php echo ($student['status'] == 1) ? 'disabled' : ''; ?> onclick="return confirm('Are you sure you want to delete this student?');">
     </form>
 </td>
+      <td><?php  echo  $student['created_datetime'] ?></td>
+      <td><?php  echo  $student['updated_datetime'] ?></td>
         </tr>
       <?php } ?>
     </table>
@@ -164,6 +244,6 @@ $total_pages = ceil($total_records / $records_per_page);
   <?php } else { ?>
     <p>No students found.</p>
   <?php } ?>
-
+  
 </body>
 </html>

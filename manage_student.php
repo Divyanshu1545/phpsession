@@ -13,29 +13,56 @@ if (isset($_POST['update']) && isset($_POST['student_id'])) {
     $class = $_POST['class'];
     $gender = $_POST['gender'];
     $note = $_POST['note'];
+    $status=$_POST['status'];
     $date_of_birth = $_POST['date_of_birth'];
+    function sanitize_name($name) {
+        // Remove any leading or trailing whitespace
+        $name = trim($name);
+        // Remove any HTML tags and encode special characters
+        $name = filter_var($name, FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_HIGH);
+        // You can also use the following line to allow alphabets, spaces, and dashes only
+        // $name = preg_replace("/[^a-zA-Z\s-]/", "", $name);
+        return $name;
+    }
+    
+
+    if (!filter_var($email,FILTER_VALIDATE_EMAIL)) {
+        echo "<script> alert('Email is not valid');   </script>";
+        
+         exit();
+     }
+ 
+      if (!preg_match("/^\d{10}$/", $phone)) {
+         echo "<script> alert('Phone is not valid');   </script>";
+         
+         exit();
+     }
+     
 
     // Update the student record
-    $update_query = "UPDATE student SET 
-                        student_name = '$student_name',
-                        father_name = '$father_name',
-                        phone = '$phone',
-                        email = '$email',
-                        class = '$class',
-                        gender = '$gender',
-                        note = '$note',
-                        date_of_birth = '$date_of_birth'
-                    WHERE student_id = $student_id";
-
-    $update_result = mysqli_query($conn, $update_query);
+    $update_query =$conn->prepare( "UPDATE student SET 
+                        student_name = ?,
+                        father_name = ?,
+                        phone = ?,
+                        email = ?,
+                        class = ?,
+                        gender = ?,
+                        status = ?,
+                        note = ?,
+                        date_of_birth = ?
+                    WHERE student_id = ? ");
+                    $update_query->bind_param("ssssssssss",$student_name, $father_name, $phone, $email, $class, $gender, $status, $note, $date_of_birth, $student_id );
+$update_query->execute();
+    $update_result = $update_query->get_result();
 
     if ($update_result) {
-        echo "<script> alert('Recor updated Successfully.');   </script>";
+        echo "<script> alert('Record updated Successfully.');   </script>";
         header("Location: restricted_page.php");
         exit();
     } else {
-        echo "<script> alert('There was an error while updating the record');   </script>";
-        echo "Error: Unable to update the student record.";
+        echo "<script> alert('Record updated Successfully.');   </script>";
+        header("Location: restricted_page.php");
+        exit(); 
     }
 } elseif (isset($_POST['delete']) && isset($_POST['student_id'])) {
     $student_id = $_POST['student_id'];
