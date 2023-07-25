@@ -28,10 +28,22 @@ if (isset($_POST['register'])) {
     $date_of_birth = filter_input(INPUT_POST, 'date_of_birth', FILTER_SANITIZE_STRING);
 
     
-    if (!filter_var($email,FILTER_VALIDATE_EMAIL)) {
-       echo "<script> alert('Email is not valid');   </script>";
-        exit();
-    }
+    $email_pattern = '/^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/';
+    $student_pattern = '/^[a-zA-Z\s]+$/';
+
+    if (!preg_match($email_pattern,$email)) {
+        echo "<script> alert('Email is not valid');   </script>";
+        
+         exit();
+     }
+     if(!preg_match($student_pattern,$student_name)){
+        echo "<script> alert('Student name is not valid');   </script>";
+        
+        exit();}
+        if(!preg_match($student_pattern,$father_name)){
+            echo "<script> alert('Student name is not valid');   </script>";
+            
+            exit();}
 
      if (!preg_match("/^\d{10}$/", $phone)) {
         echo "<script> alert('Phone is not valid');   </script>";
@@ -52,11 +64,12 @@ if (isset($_POST['register'])) {
 
             if ($existing_data['phone'] === $phone) {
               echo "<script> alert('Phone number already exists.');   </script>";
+              exit();
             }
 
             if ($existing_data['email'] === $email) {
               echo "<script> alert('Email already exists');   </script>";
-              
+              exit();
             }
         } else {
           echo "<script> alert('An unkwon error occured.');   </script>";

@@ -19,6 +19,8 @@ $search_gender = isset($_GET['search_gender']) ? $_GET['search_gender'] : '';
 $status = isset($_GET['status']) ? (int)$_GET['status'] : '';
 $date_of_birth=isset($_GET['date_of_birth']) ? $_GET['status'] : '';
 
+
+ 
 // Construct the search query
 $search_query = $conn->prepare("SELECT * FROM student WHERE 
     student_name LIKE ? AND
@@ -26,12 +28,13 @@ $search_query = $conn->prepare("SELECT * FROM student WHERE
     phone LIKE ? AND
     email LIKE ? AND
     class LIKE ? AND
-    status= ? AND
-    date_of_birth =?
+    status = ?
+    
             ") ;
+            
 
 
-$search_query->bind_param("sssssid", $search_student_name, $search_father_name, $search_phone, $search_email, $search_class, $status, $date_of_birth);
+$search_query->bind_param("sssssi", $search_student_name, $search_father_name, $search_phone, $search_email, $search_class, $status);
 
 
 
@@ -134,7 +137,8 @@ if ($search_result->num_rows === 0) {
       <?php  }
         ?>
     </table>
-    
+     
+    </div>
 
     <a href="restricted_page.php">Back to Restricted Page</a>
 </body>

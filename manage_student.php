@@ -25,15 +25,28 @@ if (isset($_POST['update']) && isset($_POST['student_id'])) {
         return $name;
     }
     
+    $pattern = '/^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/';
+    $student_pattern = '/^[a-zA-Z\s]+$/';
 
-    if (!filter_var($email,FILTER_VALIDATE_EMAIL)) {
+    if(!preg_match($student_pattern,$student_name)){
+        echo "<script> alert('Student name is not valid');   </script>";
+        
+        exit();}
+        if(!preg_match($student_pattern,$father_name)){
+            echo "<script> alert('Student name is not valid');   </script>";
+            
+            exit();}
+
+    if (!preg_match($pattern,$email)) {
         echo "<script> alert('Email is not valid');   </script>";
         
          exit();
      }
  
       if (!preg_match("/^\d{10}$/", $phone)) {
-         echo "<script> alert('Phone is not valid');   </script>";
+         echo "<script> alert('Phone is not valid');
+         
+         </script>";
          
          exit();
      }

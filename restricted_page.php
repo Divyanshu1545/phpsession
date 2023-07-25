@@ -39,64 +39,17 @@ $total_pages = ceil($total_records / $records_per_page);
   <link rel="stylesheet" href="style2.css">
   
 </head>
-<body><script>
-    function validateForm(){
-        var studentName = document.getElementById("student_name").value;
-        var fatherName = document.getElementById("father_name").value;
-        var phone = document.getElementById("phone").value;
-        var email = document.getElementById("email").value;
-        var classSelection = document.getElementById("class").value;
-        var gender = document.querySelector('input[name="gender"]:checked');
-        var dateOfBirth = document.getElementById("date_of_birth").value;
-        var termsAccepted = document.getElementById("terms_accepted").checked;
-        
-        // Validate fields
-        if (studentName.trim() === "") {
-            alert("Please enter the student's name.");
-            return false;
-        }
-        if (fatherName.trim() === "") {
-            alert("Please enter the father's name.");
-            return false;
-        }
-        if (phone.length !== 10 || !(/^\d+$/.test(phone))) {
-            alert("Please enter a valid 10-digit phone number.");
-            return false;
-        }
-        if (email.trim() === "" || !/\S+@\S+\.\S+/.test(email)) {
-            alert("Please enter a valid email address.");
-            return false;
-        }
-        if (classSelection.trim() === "") {
-            alert("Please select a class.");
-            return false;
-        }
-        if (gender === null) {
-            alert("Please select a gender.");
-            return false;
-        }
-        if (dateOfBirth.trim() === "") {
-            alert("Please select a valid date of birth.");
-            return false;
-        }
-        if (!termsAccepted) {
-            alert("Please accept the terms and conditions.");
-            return false;
-        }
-        
-        return true;
-    }
-    </script>
+<body>
   <h1>Student Page- Welcome, <?php echo $_SESSION['username']; ?></h1>
 
 <!-- Search Form -->
-<form action="search_results.php" method="get" onsubmit="return validateForm()">
-    <input type="text" name="search_student_name" placeholder="Search by Student Name">
-    <input type="text" name="search_father_name" placeholder="Search by Father Name">
-    <input type="text" name="search_phone" placeholder="Search by Phone">
-    <input type="text" name="search_email" placeholder="Search by Email">
-    <input type="date" name="date_of_birth" max="<?php echo date("Y-m-d")?>">
-    <select name="search_class">
+<form action="search_results.php" method="get" onsubmit="return validateSearchForm()">
+    <input type="text" name="search_student_name" placeholder="Search by Student Name" id="search_student_name" value="<?php echo htmlspecialchars('');?>"  >
+    <input type="text" name="search_father_name" placeholder="Search by Father Name"  id="search_father_name" value="<?php echo htmlspecialchars('');?>" >
+    <input type="tel" name="search_phone" placeholder="Search by Phone" id="search_phone"  minlength="10" maxlength="10" value="<?php echo htmlspecialchars('');?>" >
+    <input type="text" name="search_email" placeholder="Search by Email"  id="search_email" value="<?php echo htmlspecialchars('');?>" >
+    <input type="date" name="date_of_birth" max="<?php echo date("Y-m-d")?>" id="search_date_of_birth" value="<?php echo htmlspecialchars('');?>" >
+    <select name="search_class" id="search_class" value="<?php echo htmlspecialchars('');?>" >
         <option value="">-- Select Class --</option>
         <option value="1st">1st</option>
         <option value="2nd">2nd</option>
@@ -111,7 +64,7 @@ $total_pages = ceil($total_records / $records_per_page);
             <option value="1th" >11th</option>
             <option value="12th"  >12th</option>
     </select>
-    <select name="search_gender">
+    <select name="search_gender" id="search_gender"  >
         <option value="">-- Select Gender --</option>
         <option value="m">Male</option>
         <option value="f">Female</option>
@@ -152,21 +105,21 @@ $total_pages = ceil($total_records / $records_per_page);
           <td><?php echo $student['student_id']; ?></td>
           
 <td>
-    <form action="manage_student.php" method="post" onsubmit="return validateForm()">
+    <form action="manage_student.php" onsubmit="return validateForm()" method="post" >
         <input type="hidden" name="student_id" value="<?php echo $student['student_id']; ?>">
-        <input type="text" name="student_name" value="<?php echo $student['student_name']; ?>" <?php echo ($student['status'] == 1) ? 'disabled' : ''; ?>>
+        <input type="text" name="student_name" id="student_name" value="<?php echo $student['student_name']; ?>" <?php echo ($student['status'] == 1) ? 'disabled' : ''; ?>>
     </td>
     <td>
-        <input type="text" name="father_name" value="<?php echo $student['father_name']; ?>" <?php echo ($student['status'] == 1) ? 'disabled' : ''; ?>>
+        <input type="text" name="father_name" id="father_name" value="<?php echo $student['father_name']; ?>" <?php echo ($student['status'] == 1) ? 'disabled' : ''; ?>>
     </td>
     <td>
-        <input type="tel" name="phone" value="<?php echo $student['phone']; ?>" <?php echo ($student['status'] == 1) ? 'disabled' : ''; ?>  maxlength="10" minlength="10" >
+        <input type="tel" name="phone" id="phone" value="<?php echo $student['phone']; ?>" <?php echo ($student['status'] == 1) ? 'disabled' : ''; ?>  maxlength="10" minlength="10" >
     </td>
     <td>
-        <input type="text" name="email" value="<?php echo $student['email']; ?>" <?php echo ($student['status'] == 1) ? 'disabled' : ''; ?>>
+        <input type="text" name="email"  id="email" value="<?php echo $student['email']; ?>" <?php echo ($student['status'] == 1) ? 'disabled' : ''; ?>>
     </td>
     <td>
-        <select name="class" <?php echo ($student['status'] == 1) ? 'disabled' : ''; ?>>
+        <select name="class" id="class" <?php echo ($student['status'] == 1) ? 'disabled' : ''; ?>>
             <option value="1st" <?php if ($student['class'] === '1st') echo 'selected'; ?>>1st</option>
             <option value="2nd" <?php if ($student['class'] === '2nd') echo 'selected'; ?>>2nd</option>
 
@@ -187,7 +140,7 @@ $total_pages = ceil($total_records / $records_per_page);
         
         <div class="gender">
           <label>
-            <input type="radio" name="gender" value="m" <?php if ($student['gender'] === 'm') echo 'checked'; ?> <?php echo ($student['status'] == 1) ? 'disabled' : ''; ?>> Male
+            <input type="radio" name="gender" id="gender" value="m" <?php if ($student['gender'] === 'm') echo 'checked'; ?> <?php echo ($student['status'] == 1) ? 'disabled' : ''; ?>> Male
           </label>
         </div>
         <div class="gender">
@@ -199,19 +152,21 @@ $total_pages = ceil($total_records / $records_per_page);
       </div>
       </td>
     <td>
-        <textarea name="note" <?php echo ($student['status'] == 1) ? 'disabled' : ''; ?>><?php echo $student['note']; ?></textarea>
+        <textarea name="note" id="note" <?php echo ($student['status'] == 1) ? 'disabled' : ''; ?>><?php echo $student['note']; ?></textarea>
     </td>
     <td>
-        <input type="date" name="date_of_birth" value="<?php echo $student['date_of_birth']; ?>" <?php echo ($student['status'] == 1) ? 'disabled' : ''; ?>>
+        <input type="date" name="date_of_birth" id="date_of_birth" value="<?php echo $student['date_of_birth']; ?>" <?php echo ($student['status'] == 1) ? 'disabled' : ''; ?>>
     </td>
-    <td><select name="status" <?php echo ($student['status'] == 1) ? 'disabled' : ''; ?>> 
+    <td><select name="status" id="status" <?php echo ($student['status'] == 1) ? 'disabled' : ''; ?>> 
         <option value="0" <?php if ($student['status'] == 0) echo 'selected'; ?>>Active</option>
         <option value="1" <?php if ($student['status'] == 1) echo 'selected'; ?>>Inactive</option></td>
     <td>
-        <input type="submit" name="update" value="Update" <?php echo ($student['status'] == 1) ? 'disabled' : ''; ?>>
+        <input type="submit" name="update"  value="Update" <?php echo ($student['status'] == 1) ? 'disabled' : ''; ?>>
     </td>
     <td>
         <input type="submit" name="delete" value="Delete" <?php echo ($student['status'] == 1) ? 'disabled' : ''; ?> onclick="return confirm('Are you sure you want to delete this student?');">
+        
+     
     </form>
 </td>
       <td><?php  echo  $student['created_datetime'] ?></td>
@@ -244,6 +199,77 @@ $total_pages = ceil($total_records / $records_per_page);
   <?php } else { ?>
     <p>No students found.</p>
   <?php } ?>
-  
+  <script>
+    function validateForm() {
+      console.log("helo world)()");
+    var studentName = document.getElementById("student_name").value.trim();
+    var fatherName = document.getElementById("father_name").value.trim();
+    var phone = document.getElementById("phone").value.trim();
+    var email = document.getElementById("email").value.trim();
+    var classSelection = document.getElementById("class").value;
+    var gender = document.querySelector('input[name="gender"]:checked');
+    var dateOfBirth = document.getElementById("date_of_birth").value;
+
+    // Validate fields
+    if (studentName === "") {
+        alert("Please enter the student's name.");
+        return false;
+    }
+    if (fatherName === "") {
+        alert("Please enter the father's name.");
+        return false;
+    }
+    if (phone === "" || phone.toString().length !== 10 || !(/^\d+$/.test(phone))) {
+        alert("Please enter a valid 10-digit phone number.");
+        return false;
+    }
+    if (email === "" || !/\S+@\S+\.\S+/.test(email)) {
+        alert("Please enter a valid email address.");
+        return false;
+    }
+    return true;
+}
+
+    function validateSearchForm(){
+        var studentName = document.getElementById("search_student_name").value;
+        var fatherName = document.getElementById("search_father_name").value;
+        var phone = document.getElementById("search_phone").value;
+        var email = document.getElementById("search_email").value;
+        var classSelection = document.getElementById("search_class").value;
+        var gender = document.querySelector('input[name="gender"]:checked');
+        var dateOfBirth = document.getElementById("search_date_of_birth").value;
+        
+        
+        // Validate fields
+        if (studentName !=="") {
+          
+        
+
+
+        if (studentName.length <3) {
+            alert("Name should be atleast 3 character long.");
+            return false;
+        }}
+      
+        if (phone!=="") {
+        
+    
+        if (phone.length !== 10 || !(/^\d+$/.test(phone))) {
+            alert("Please enter a valid 10-digit phone number.");
+            return false;
+          }  }
+
+          if (email.trim() !== "" ) {
+            
+          
+        if ( !/\S+@\S+\.\S+/.test(email)) {
+            alert("Please enter a valid email address.");
+            return false;
+        }}
+      
+        
+        return true;
+    }
+    </script>
 </body>
 </html>
