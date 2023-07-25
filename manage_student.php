@@ -3,6 +3,20 @@
 
 // Include the database connection file
 require_once('connect.php');
+function isValidDate($date) {
+    // Regular expression pattern for "YYYY-MM-DD" format
+    $pattern = "/^(\d{4})-(\d{2})-(\d{2})$/";
+    
+    // Check if the date matches the pattern
+    if (preg_match($pattern, $date, $matches)) {
+        // Check if the date is valid (e.g., not Feb 31 or Apr 31)
+        if (checkdate((int)$matches[2], (int)$matches[3], (int)$matches[1])) {
+            return true;
+        }
+    }
+    
+    return false;
+}
 
 if (isset($_POST['update']) && isset($_POST['student_id'])) {
     $student_id = $_POST['student_id'];
@@ -27,7 +41,12 @@ if (isset($_POST['update']) && isset($_POST['student_id'])) {
     
     $pattern = '/^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/';
     $student_pattern = '/^[a-zA-Z\s]+$/';
-
+if (isset($_POST['date_of_birth'])) {
+    if(!isValidDate($date_of_birth)){
+        echo "<script> alert('Date is not valid');   </script>";
+        exit();
+    }
+}
     if(!preg_match($student_pattern,$student_name)){
         echo "<script> alert('Student name is not valid');   </script>";
         
@@ -50,7 +69,7 @@ if (isset($_POST['update']) && isset($_POST['student_id'])) {
          
          exit();
      }
-     
+     $current_page=isset($_GET['page'])?$_GET['page']:1;
 
     // Update the student record
     $update_query =$conn->prepare( "UPDATE student SET 
@@ -65,16 +84,17 @@ if (isset($_POST['update']) && isset($_POST['student_id'])) {
                         date_of_birth = ?
                     WHERE student_id = ? ");
                     $update_query->bind_param("ssssssssss",$student_name, $father_name, $phone, $email, $class, $gender, $status, $note, $date_of_birth, $student_id );
-$update_query->execute();
+                    require 'check_login.php';
+        $update_query->execute();
     $update_result = $update_query->get_result();
 
     if ($update_result) {
         echo "<script> alert('Record updated Successfully.');   </script>";
-        header("Location: restricted_page.php");
+        header("Location: restricted_page.php?page=$current_page");
         exit();
     } else {
         echo "<script> alert('Record updated Successfully.');   </script>";
-        header("Location: restricted_page.php");
+        header("Location: restricted_page.php?page=$current_page");
         exit(); 
     }
 } elseif (isset($_POST['delete']) && isset($_POST['student_id'])) {

@@ -1,16 +1,26 @@
 <?php
 
 
+require('check_login.php');
+require_once('connect.php');
 
-require_once('check_login.php');
 
 
-if (isset($_POST['register']) && !isset($_POST['terms_accepted'])) {
-
+function isValidDate($date) {
+    // Regular expression pattern for "YYYY-MM-DD" format
+    $pattern = "/^(\d{4})-(\d{2})-(\d{2})$/";
+    
+    // Check if the date matches the pattern
+    if (preg_match($pattern, $date, $matches)) {
+        // Check if the date is valid (e.g., not Feb 31 or Apr 31)
+        if (checkdate((int)$matches[2], (int)$matches[3], (int)$matches[1])) {
+            return true;
+        }
+    }
+    
+    return false;
 }
 
-
-require_once('connect.php');
 
 
 $student_name = $father_name = $phone = $email = $class = $gender = $note = $date_of_birth = '';
@@ -50,12 +60,18 @@ if (isset($_POST['register'])) {
         exit();
     }
     
+        if(!isValidDate($date_of_birth)){
+            echo "<script> alert('Date is not valid');   </script>";
+            exit();
+        }
+    
+    
 
         
         $check_query = $conn->prepare("SELECT phone, email FROM student WHERE phone = ? OR email = ?");
         
         $check_query->bind_param('ss',$phone,$email);
-        
+        require 'check_login.php';
          $check_query->execute();
 
         $check_result=$check_query->get_result();
@@ -87,8 +103,11 @@ if (isset($_POST['register'])) {
             if ($insert_result) {
                 // Successful insertion
                 echo "<script> alert('Registered Successfully.');   </script>";
+                header("LOCATION:  restricted_page.php");
             } else {
                 // Failed to insert
+                header("LOCATION:  restricted_page.php");
+
                 echo "<script> alert('Registered Successfully.');   </script>";}
             }
         
@@ -171,14 +190,14 @@ if (isset($_POST['register'])) {
         var gender = document.querySelector('input[name="gender"]:checked');
         var dateOfBirth = document.getElementById("date_of_birth").value;
         var termsAccepted = document.getElementById("terms_accepted").checked;
-        
+        var pattern = /^[a-zA-Z\s]+$/;
         // Validate fields
-        if (studentName.trim() === "") {
-            alert("Please enter the student's name.");
+        if (!pattern.test(studentName)) {
+            alert("Please enter a valid student's name.");
             return false;
         }
-        if (fatherName.trim() === "") {
-            alert("Please enter the father's name.");
+        if (!pattern.test(fatherName)) {
+            alert("Please enter a valid father's name.");
             return false;
         }
         if (phone.length !== 10 || !(/^\d+$/.test(phone))) {

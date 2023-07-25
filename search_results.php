@@ -8,42 +8,68 @@ function preparedQuery($sql,$params) {
     for ($i=0; $i<count($params); $i++) {
       $sql = preg_replace('/\?/',$params[$i],$sql,1);
     }}
+// Construct the base search query
+$sql = "SELECT * FROM student WHERE 1=1";
 
-// Retrieve search criteria from the URL parameters
- $search_student_name = isset($_GET['search_student_name']) ? '%' . $_GET['search_student_name'] . '%' : '';
-$search_father_name = isset($_GET['search_father_name']) ? '%' . $_GET['search_father_name'] . '%' : '';
-$search_phone = isset($_GET['search_phone']) ? '%' . $_GET['search_phone'].'%' : '';
-$search_email = isset($_GET['search_email']) ? '%' . $_GET['search_email'] . '%' : '';
-$search_class = isset($_GET['search_class']) ? '%' . $_GET['search_class'] . '%' : '';
-$search_gender = isset($_GET['search_gender']) ? $_GET['search_gender'] : '';
-$status = isset($_GET['status']) ? (int)$_GET['status'] : '';
-$date_of_birth=isset($_GET['date_of_birth']) ? $_GET['status'] : '';
+// Define an array to hold the parameters and their corresponding types
+$params = array();
+$types = "";
 
+// Add search conditions and parameters for student_name
+if (isset($_GET['search_student_name'])) {
+    $sql .= " AND student_name LIKE ?";
+    $params[] = '%' . $_GET['search_student_name'] . '%';
+    $types .= 's';
+}
 
- 
-// Construct the search query
-$search_query = $conn->prepare("SELECT * FROM student WHERE 
-    student_name LIKE ? AND
-    father_name LIKE ? AND
-    phone LIKE ? AND
-    email LIKE ? AND
-    class LIKE ? AND
-    status = ?
-    
-            ") ;
-            
+// Add search conditions and parameters for father_name
+if (isset($_GET['search_father_name'])) {
+    $sql .= " AND father_name LIKE ?";
+    $params[] = '%' . $_GET['search_father_name'] . '%';
+    $types .= 's';
+}
 
+// Add search conditions and parameters for phone
+if (isset($_GET['search_phone'])) {
+    $sql .= " AND phone LIKE ?";
+    $params[] = '%' . $_GET['search_phone'] . '%';
+    $types .= 's';
+}
 
-$search_query->bind_param("sssssi", $search_student_name, $search_father_name, $search_phone, $search_email, $search_class, $status);
+// Add search conditions and parameters for email
+if (isset($_GET['search_email'])) {
+    $sql .= " AND email LIKE ?";
+    $params[] = '%' . $_GET['search_email'] . '%';
+    $types .= 's';
+}
 
+// Add search conditions and parameters for class
+if (isset($_GET['search_class'])) {
+    $sql .= " AND class LIKE ?";
+    $params[] = '%' . $_GET['search_class'] . '%';
+    $types .= 's';
+}
 
+// Add search conditions and parameters for status
+if ($_GET['status']==0 ||$_GET['status']==1) {
+    $sql .= " AND status = ?";
+    $params[] = (int)$_GET['status'];
+    $types .= 'i';
+} else {
+    // If status is not set, search for both 1 and 0 in the status column
+    $sql .= " AND (status = 0 OR status = 1)";
+}
+
+// Prepare and bind the search query
+$search_query = $conn->prepare($sql);
+
+if (count($params) > 0) {
+    $search_query->bind_param($types, ...$params);
+}
 
 $search_query->execute();
-$search_result =$search_query->get_result(); 
+$search_result = $search_query->get_result();
 
-if ($search_result->num_rows === 0) {
-    echo 'No results found.';
-}
 ?>
 
 
@@ -109,15 +135,22 @@ if ($search_result->num_rows === 0) {
             <option value="12th"<?php if ($student['class'] === '12th') echo 'selected'; ?>>12th</option>
         </select>
     </td>
-    <td><div class="gender">
-        <label>
-            <input type="radio" name="gender" value="m" <?php if ($student['gender'] === 'm') echo 'checked'; ?> <?php echo ($student['status'] == 1) ? 'disabled' : ''; ?>> Male
-        </label>
-        <label>
-            <input type="radio" name="gender" value="f" <?php if ($student['gender'] === 'f') echo 'checked'; ?> <?php echo ($student['status'] == 1) ? 'disabled' : ''; ?>> Female
-        </label>
+    <td>
+      <div class="gender-div">
         
-    </td>
+        <div class="gender">
+          <label>
+            <input type="radio" name="gender" id="gender" value="m" <?php if ($student['gender'] === 'm') echo 'checked'; ?> <?php echo ($student['status'] == 1) ? 'disabled' : ''; ?>> Male
+          </label>
+        </div>
+        <div class="gender">
+          <label>
+            <input type="radio" name="gender" value="f" <?php if ($student['gender'] === 'f') echo 'checked'; ?> <?php echo ($student['status'] == 1) ? 'disabled' : ''; ?>> Female
+          </label>
+        </div>
+
+      </div>
+      </td>
     <td>
         <textarea name="note" <?php echo ($student['status'] == 1) ? 'disabled' : ''; ?>><?php echo $student['note']; ?></textarea>
     </td>
@@ -136,9 +169,12 @@ if ($search_result->num_rows === 0) {
         </tr>
       <?php  }
         ?>
+        <?php 
+if ($search_result->num_rows === 0) {
+    echo 'No results found.';
+} ?>
     </table>
-     
-    </div>
+    
 
     <a href="restricted_page.php">Back to Restricted Page</a>
 </body>

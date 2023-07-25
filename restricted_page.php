@@ -44,6 +44,7 @@ $total_pages = ceil($total_records / $records_per_page);
 
 <!-- Search Form -->
 <form action="search_results.php" method="get" onsubmit="return validateSearchForm()">
+
     <input type="text" name="search_student_name" placeholder="Search by Student Name" id="search_student_name" value="<?php echo htmlspecialchars('');?>"  >
     <input type="text" name="search_father_name" placeholder="Search by Father Name"  id="search_father_name" value="<?php echo htmlspecialchars('');?>" >
     <input type="tel" name="search_phone" placeholder="Search by Phone" id="search_phone"  minlength="10" maxlength="10" value="<?php echo htmlspecialchars('');?>" >
